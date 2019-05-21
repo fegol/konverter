@@ -13,6 +13,11 @@ class ConverterContextBuilder {
     }
 
     @ConverterMarker
+    fun includeDefaultContext() {
+        maps.putAll(ConverterContext.defaultContext.maps)
+    }
+
+    @ConverterMarker
     fun include(context: ConverterContext) {
         maps.putAll(context.maps)
     }
