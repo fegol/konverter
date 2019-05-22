@@ -8,10 +8,13 @@ class ConverterContext(converterContextBuilder: ConverterContextBuilder) {
     internal val maps = converterContextBuilder.maps
 
     fun <T : Any, R : Any> convert(
-        from: T, tclazz: String,
-        rclazz: String
+        from: T,
+        tclazz: String,
+        rclazz: String,
+        name: String? = null
     ): R {
-        val mapper = maps[tclazz + rclazz]
+        val key = name?.let { it + tclazz + rclazz } ?: tclazz + rclazz
+        val mapper = maps[key]
             ?: throw IllegalArgumentException("Cannot convert $tclazz to $rclazz")
         return mapper.invoke(this, from) as R
     }
@@ -19,26 +22,28 @@ class ConverterContext(converterContextBuilder: ConverterContextBuilder) {
     fun <T : Any, R : Any> convertAll(
         from: Iterable<T>,
         tclazz: String,
-        rclazz: String
+        rclazz: String,
+        name: String? = null
     ): List<R> {
-        val mapper = maps[tclazz + rclazz]
+        val key = name?.let { name + tclazz + rclazz } ?: tclazz + rclazz
+        val mapper = maps[key]
             ?: throw IllegalArgumentException("Cannot convert $tclazz to $rclazz")
         return from.map { mapper.invoke(this, it) as R }
     }
 
     @ConverterMarker
-    inline fun <reified T : Any, reified R : Any> T.convert(): R {
-        return convert(this, T::class.qualifiedName!!, R::class.qualifiedName!!)
+    inline fun <reified T : Any, reified R : Any> T.convert(name: String? = null): R {
+        return convert(this, T::class.qualifiedName!!, R::class.qualifiedName!!, name)
     }
 
     @ConverterMarker
-    inline fun <reified T : Any, R : Any> T.convert(clazz: KClass<R>): R {
-        return convert(this, T::class.qualifiedName!!, clazz.qualifiedName!!)
+    inline fun <reified T : Any, R : Any> T.convert(clazz: KClass<R>, name: String? = null): R {
+        return convert(this, T::class.qualifiedName!!, clazz.qualifiedName!!, name)
     }
 
     @ConverterMarker
-    inline fun <reified T : Any, reified R : Any> Iterable<T>.convertAll(): List<R> {
-        return convertAll(this, T::class.qualifiedName!!, R::class.qualifiedName!!)
+    inline fun <reified T : Any, reified R : Any> Iterable<T>.convertAll(name: String? = null): List<R> {
+        return convertAll(this, T::class.qualifiedName!!, R::class.qualifiedName!!, name)
     }
 
     companion object {

@@ -7,6 +7,10 @@ object Converter {
         return ConverterContext.defaultContext.convert(this, tclazz, rclazz)
     }
 
+    fun <T : Any, R : Any> T.convert(name: String, tclazz: String, rclazz: String): R {
+        return ConverterContext.defaultContext.convert(this, tclazz, rclazz, name)
+    }
+
     fun <T : Any, R : Any> Iterable<T>.convertAll(tclazz: String, rclazz: String): List<R> {
         return ConverterContext.defaultContext.convertAll(this, tclazz, rclazz)
     }
@@ -17,6 +21,10 @@ object Converter {
 
     inline fun <reified T : Any, R : Any> T.convert(clazz: KClass<R>): R {
         return convert(T::class.qualifiedName!!, clazz.qualifiedName!!)
+    }
+
+    inline fun <reified T : Any, reified R : Any> T.convert(name: String): R {
+        return convert(name, T::class.qualifiedName!!, R::class.qualifiedName!!)
     }
 
     inline fun <reified T : Any, reified R : Any> Iterable<T>.convertAll(): List<R> {
