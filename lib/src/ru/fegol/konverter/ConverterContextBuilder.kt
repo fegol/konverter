@@ -1,7 +1,5 @@
 package ru.fegol.konverter
 
-import kotlin.reflect.KClass
-
 @Suppress("UNCHECKED_CAST")
 class ConverterContextBuilder {
 
@@ -9,7 +7,12 @@ class ConverterContextBuilder {
 
     @ConverterMarker
     inline fun <reified T : Any, reified R : Any> register(noinline block: ConverterContext.(T) -> R) {
-        register(block, T::class, R::class)
+        register(block, T::class.qualifiedName!!, R::class.qualifiedName!!)
+    }
+
+    @ConverterMarker
+    inline fun <reified T : Any, reified R : Any> register(name: String, noinline block: ConverterContext.(T) -> R) {
+        register(name, block, T::class.qualifiedName!!, R::class.qualifiedName!!)
     }
 
     @ConverterMarker
@@ -22,8 +25,14 @@ class ConverterContextBuilder {
         maps.putAll(context.maps)
     }
 
-    fun <T : Any, R : Any> register(block: ConverterContext.(T) -> R, tclazz: KClass<T>, rclazz: KClass<R>) {
-        maps[tclazz.qualifiedName + rclazz.qualifiedName] = {
+    fun <T : Any, R : Any> register(block: ConverterContext.(T) -> R, tclazz: String, rclazz: String) {
+        maps[tclazz + rclazz] = {
+            block.invoke(this, it as T)
+        }
+    }
+
+    fun <T : Any, R : Any> register(name: String, block: ConverterContext.(T) -> R, tclazz: String, rclazz: String) {
+        maps[name + tclazz + rclazz] = {
             block.invoke(this, it as T)
         }
     }
