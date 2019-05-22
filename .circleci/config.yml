@@ -5,4 +5,5 @@ jobs:
       - image: circleci/openjdk:11-jdk
     steps:
       - checkout
+      - run: chmod 755 gradlew
       - run: ./gradlew assemble
