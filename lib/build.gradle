@@ -1,5 +1,5 @@
 apply plugin: 'kotlin'
-apply plugin: 'application'
+apply plugin: 'java-library'
 
 group 'ru.fegol'
 version '1.0-SNAPSHOT'
