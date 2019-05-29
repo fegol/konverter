@@ -5,7 +5,7 @@ import kotlin.reflect.KClass
 @Suppress("UNCHECKED_CAST")
 class ConverterContext(converterContextBuilder: ConverterContextBuilder) {
 
-    internal val maps = converterContextBuilder.maps
+    internal val maps = converterContextBuilder.build()
 
     fun <T : Any, R : Any> convert(
         from: T,

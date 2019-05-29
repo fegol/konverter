@@ -3,7 +3,7 @@ package ru.fegol.konverter
 @Suppress("UNCHECKED_CAST")
 class ConverterContextBuilder {
 
-    internal val maps: MutableMap<String, ConverterContext.(Any) -> Any> = mutableMapOf()
+    private val maps: MutableMap<String, ConverterContext.(Any) -> Any> = mutableMapOf()
 
     @ConverterMarker
     inline fun <reified T : Any, reified R : Any> register(noinline block: ConverterContext.(T) -> R) {
@@ -26,14 +26,24 @@ class ConverterContextBuilder {
     }
 
     fun <T : Any, R : Any> register(block: ConverterContext.(T) -> R, tclazz: String, rclazz: String) {
+        if (maps[tclazz + rclazz] != null) {
+            throw ConvertConflictException(tclazz, rclazz)
+        }
         maps[tclazz + rclazz] = {
             block.invoke(this, it as T)
         }
     }
 
     fun <T : Any, R : Any> register(name: String, block: ConverterContext.(T) -> R, tclazz: String, rclazz: String) {
+        if (maps[name + tclazz + rclazz] != null) {
+            throw ConvertConflictException(tclazz, rclazz)
+        }
         maps[name + tclazz + rclazz] = {
             block.invoke(this, it as T)
         }
+    }
+
+    internal fun build(): Map<String, ConverterContext.(Any) -> Any> {
+        return maps
     }
 }

@@ -6,4 +6,12 @@ jobs:
     steps:
       - checkout
       - run: chmod 755 gradlew
-      - run: ./gradlew assemble
+      - run:
+          name: Clean project
+          command: ./gradlew clean
+      - run:
+          name: Assemble project
+          command: ./gradlew assemble
+      - run:
+          name: Tests
+          command: ./gradlew test
