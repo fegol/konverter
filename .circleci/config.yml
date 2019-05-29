@@ -15,6 +15,6 @@ jobs:
       - run:
           name: Tests
           command: ./gradlew test
-      run:
-        name: test
-        command: echo $TEST_VARIABLE
+      - run:
+          name: test
+          command: echo $TEST_VARIABLE
